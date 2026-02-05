@@ -1,0 +1,19 @@
+---
+title: 'Tips - Windows沙盒探索'
+date: 2024-08-23
+summary: ''
+tags: ['Tips']
+featured: false
+draft: false
+cover: ''
+---
+
+# Tips - Windows沙盒探索
+
+对沙盒的需求多了，问题自然也就来了，本贴会根据使用过程中遇到的问题来记录解决方法。
+
+# 2024/8/23
+**Q：** 宿主机开启Clash for Windows的情况下，沙盒无法上网。
+**A：** 导致的原因是沙盒继承了宿主机的代理且无法修改，解决方法在CFW的Settings-System Proxy下将Static Host改为宿主机的本地网络地址，如192.168.1.x 。
+
+[]()

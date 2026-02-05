@@ -1,0 +1,85 @@
+---
+title: '动手笔记 - 像素时钟显示Crypto价格'
+date: 2024-02-14
+summary: ''
+tags: ['动手笔记']
+featured: false
+draft: false
+cover: ''
+---
+
+# 动手笔记 - 像素时钟显示Crypto价格
+
+![20240214_190206_1](https://ipfs.io/ipfs/QmTQHgFnrJnSk7kNXpL86XHvwMnvS9KRLpq2r3rnG6J3eD)
+
+# 前情提要
+> 我之前买了一个成品，Crypto价格显示也是卖家提供的，而且一个接口只能显示一种加密货币，接口还老容易出问题显示不了，于是决定自给自足。
+
+# 准备
+Awtrix 硬件和软件看张大妈上面的两篇，写的很好，适合动手能力强的小伙伴，DIY自由度高。如果跟我一样动手能力一般，可以淘宝或者咸鱼购买成品。
+[Awtrix 篇一：【Awtrix】像素时钟，从硬件到软件详细入门教程](https://post.smzdm.com/p/apzeg94w/
+)
+[Awtrix 篇二：【Awtrix】像素时钟，从硬件到软件详细入门教程](https://post.smzdm.com/p/axl6vlq9/)
+
+
+**有离线系统和官方系统，由于我没有找到上面教程里的带加密货币功能的离线固件，因此以下教程均为官方固件。Crypto价格显示需要联网系统，这篇主讲自己部署Docker版Awtrix2服务。**
+
+# 配置
+原理很简单，显示器有了，只要再来一个推送数据的服务即可，参照Awtrix2官方教程而来。
+## 服务部署：
+### 硬件
+一台服务器：
+云端诸如阿里云、腾讯云
+本地端诸如自建服务器、日常使用的电脑
+
+### 配置过程
+#### 安装docker
+- Linux
+**_系统要求：_**
+Docker支持64位版本的CentOS 7和CentOS 8及更高版本，它要求Linux内核版本不低于3.10，推荐Ubuntu最新版本。
+**_自动化安装代码：_**
+```
+curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+```
+- Windows
+_**参照官方教程即可：**_
+```
+https://docs.docker.com/desktop/install/windows-install/
+```
+#### 部署Awtrix2
+_**一键部署代码：**_
+```
+docker run --name AwTriX2 -p 7000:7000 -p 7001:7001 -p 5568:5568/udp --restart always -e TZ=Europe/Berlin  whyet/awtrix2:latest 
+```
+_**更多信息参考：**_
+https://github.com/wHyEt/Awtrix2-Docker
+
+#### 配置Awtrix2
+我用的是Windows版Docker，以下仅以Windows版示例。
+
+Docker版Awtrix2部署完成后可以在Docker客户端内看到如下
+
+![image](https://ipfs.io/ipfs/QmSWGWp8ozYDjLuqbAgw3MkB6RV6Whs8ZA1jwonZPceEbW)
+Status可以看到Awtrix2当前状态
+
+访问Docker所在设备的IP+端口号进行设置，注意要在防火墙放行7000,7001,5568这三个端口。
+例如设备IP为：192.168.2.14
+则在浏览器地址栏输入：192.168.2.14:7000 
+进入后会看到如下页面：
+界面语言可以在设置主机那边改成zh-CN然后点右上角保存按钮
+![image](https://ipfs.io/ipfs/QmWEGPWiM8dWYddid4RdR6uh9eWP9jfKdgqnDyaTJhDk6H)
+_**如果像素显示器那边没有配置会提示没有设备连接，需要先在像素显示器那里配置连接服务，参考上面教程2**_
+
+#### Crypto价格显示
+默认只安装了时间插件，Crypto插件需要自己在应用商城里安装
+![image](https://ipfs.io/ipfs/QmahyyMKCEU3X96LcQ8Dh53Boyq9v582ydGTxxVann8UKi)
+安装好了点齿轮按钮进入插件设置
+左边是显示设置根据自己喜好来就行，设置好点左边右上角保存。
+右边是需要显示的加密货币和信息类目设置，同样设置好点右边右上角保存。
+![image](https://ipfs.io/ipfs/QmdLTnk91JAeW4UB6Js6TWTCeuZ57NtSS4aJyfa3EQZoUb)
+**这样你的像素显示器就会按照你的设置来显示对应的信息了，更有意思的玩法可以自行摸索。**
+
+
+
+
+[]()

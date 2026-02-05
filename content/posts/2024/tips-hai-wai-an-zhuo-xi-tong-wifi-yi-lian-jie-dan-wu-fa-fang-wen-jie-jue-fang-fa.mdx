@@ -1,0 +1,38 @@
+---
+title: 'Tips - 海外安卓系统，WIFI“已连接但无法访问”解决方法'
+date: 2024-07-09
+summary: ''
+tags: ['Tips']
+featured: false
+draft: false
+cover: ''
+---
+
+# Tips - 海外安卓系统，WIFI“已连接但无法访问”解决方法
+
+# 手机打开USB调式
+设置-关于手机-版本号，连续点击打开开发者模式，进入开发者选项把USB调式打开
+# Windows配置adb
+[下载adb](https://beta.fileverse.io/files/283160d8-cfa2-4afd-9d8f-6601ad9fc31c)
+
+解压到C盘根目录（非小白可自由选择）
+
+![image](https://ipfs.io/ipfs/QmXU4bLTF1WzUoyEuofrkutT5RS69YRSLEfe3pRCSaP3Xo)
+
+修改系统环境变量
+
+![image](https://ipfs.io/ipfs/QmTCrWLRcFz6Mh94pXY68rLyQMZBz4x3J33SAfnpK6PqeQ)
+
+添加adb目录
+
+![image](https://ipfs.io/ipfs/Qmefu8jsSkTx7HWPxjAabJoQWWRXuLDwkQrSp2RAx6wWQU)
+
+# 开始操作
+手机连接电脑，终端里依次输入：
+```
+adb shell settings put global captive_portal_use_https 1
+adb shell settings put global captive_portal_http_url http://204.ustclug.org
+adb shell settings put global captive_portal_https_url https://204.ustclug.org
+adb shell settings put global captive_portal_mode 0
+```
+完成后手机切换一下飞行模式再切回，一切OK。

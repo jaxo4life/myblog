@@ -1,0 +1,74 @@
+---
+title: 'Cheems的一些真相'
+date: 2024-10-17
+summary: ''
+tags: []
+featured: false
+draft: false
+cover: ''
+---
+
+# Cheems的一些真相
+
+# 背景故事
+2023年5月3日zkSync Era上的项目Cheems发布空投，宣布100%空投给社区。
+时间线：
+**2023年5月**
+空投初始总量 690,690,690,690,690 ，未领取的空投被销毁，实际的初始流通量 295,623,261,561,558 约为 295.6T。
+https://era.zksync.network/token/0xd599da85f8fc4877e61f547dfacffe1238a7149e#balances
+**2024年6月**
+官方宣布更换合约，未及时更换合约的代币被销毁，更换合约后的流通量 219,776,051,832,670 约为 219.8T 。
+https://era.zksync.network/token/0x9db6bf8b0215a02bea9bef28a92d829fd008d480#balances
+**2024年9月**
+官方宣布迁移到BNB Chain，未及时迁移的经过社区投票于10月15日销毁，迁移后的流通量：203,672,960,023,058 约为 203.7T 。
+https://bscscan.com/token/0x0DF0587216a4a1bB7d5082fdc491d93d2dD4B413#balances
+
+# 数据追踪
+## 空投
+**2023年5月3日：**
+49个钱包分别向大约 18829个新地址分发以太坊，每个地址 0.003E。
+地址列表：
+https://beta.fileverse.io/files/61d8e477-f0a2-4a6e-a643-62df82915ac9
+
+![image](https://ipfs.io/ipfs/QmSqi3DrdWxTuhRGivCcLrDniQyVthnqxiY1FLJrNB2hKp)
+
+其中一个钱包分发的记录:
+https://era.zksync.network/address/0x7d9e65fe50ba5490b42e299c4b191b9a19f1ce2a
+![image](https://ipfs.io/ipfs/QmYPjEgfTBrHKJD2st2e6NEYzEcse8PheBpwuY3EwZracU)
+
+这些负责分发以太坊的钱包于2023年7月9日将剩余的以太坊汇总到一个钱包：
+https://era.zksync.network/address/0x191d6ca2f43acf8a3607523e6ce41e7d1a7602f4
+![image](https://ipfs.io/ipfs/QmefMFG1UYhN7opuAXyLrrHt5w4d2FbNW8yxYfYXXR9dGW)
+
+
+**2023年5月4日：**
+这些地址领取Cheems空投，每个地址领取 6.9B （6,906,906,906.91）或者 4.8B（4,834,834,834.83） 的Cheems代币，然而这些地址都是5月3日新创建的地址，**应该没有领取空投的资格**。
+其中一个领取空投的新地址：https://era.zksync.network/address/0x970f63911ddea893260f8debad0acccc4fecd528
+![image](https://ipfs.io/ipfs/QmSQdmZQ7iuTBA3Vrh3EQpb8zYG31V7scdmxbmAw8Zdzoh)
+
+
+## 代币的流向
+_**以下均为粗略筛查，因为实际的情况抽查到有样本采取在zks上就分散到其它新地址，类似的情况统计起来工作量巨大，这里不考虑。**_
+1. 在zks上卖出： 工作量大未统计。
+2. 没有参与第一次换合约： 总量约为30T
+3. 没有参与换链：工作量大未统计
+4. 成功迁移到BNB Chain：
+zks链上确认迁移的记录共 13298条，最高有 13298个地址。
+统计数据时，只获取到 12008个地址记录（因为24日记录量大只能获取最早的 5000条），这 12008个地址里有 10132个地址存在雷同数量的情况，这里面有基础的4.8B、6.9B，也有转移混合过的其它更大数字，总量超过 69T 。统计的地址数占实际地址总数的 90%，实际迁移到BNB Chain的总量大约为 76T ？
+**完整的统计表格**：https://beta.fileverse.io/files/6943685a-b515-4f00-972a-c60f543cf5d4
+![image](https://ipfs.io/ipfs/QmTcirhWwGH9jwfv5C6vQ2afEu5LCfeDDxBUaJ2NHQL7d7)
+5. 当前BNB Chain上的总余额：
+截止2024年10月17日 18:35 UTC+8，当前cheems总余额为大约 33T 。
+![image](https://ipfs.io/ipfs/QmZuZneroGtLi6KhR1ZHhvswFc7cAEW6V2x1dduhmHwu7B)
+6. BNB Chain上卖出如何查看？
+在dexscreener这里：
+https://dexscreener.com/bsc/0x38231d4ef9d33ebea944c75a21301ff6986499c3
+下方的transaction表格里TYPE筛选SELL，CHEEMS筛选最小 3,000,000,000 最大 6,000,000,000 。
+
+# 结尾
+上面的只是我能追踪到的链上数据，有没有其它的我也不知道。
+
+**_祝好运！_**
+
+
+[]()
