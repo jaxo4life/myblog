@@ -11,7 +11,7 @@ const config: NextConfig = {
   images: {
     unoptimized: true,
   },
-  trailingSlash: true,
+  // trailingSlash: true, // 与中文 URL 编码冲突，暂时禁用
   transpilePackages: ['@content-collections/next'],
   webpack: (config, { isServer }) => {
     config.resolve.alias = {

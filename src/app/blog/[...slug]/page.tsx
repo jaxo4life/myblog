@@ -125,7 +125,7 @@ export default async function PostPage({ params }: PostPageProps) {
                   {post.tags.map((tag: string) => (
                     <Link
                       key={tag}
-                      href={`/blog/tag/${encodeURIComponent(tag.toLowerCase())}`}
+                      href={`/blog/tag/${tag.toLowerCase()}`}
                       className="tag-array text-xs"
                     >
                       <span className="group-hover:text-terminal-green transition-colors">{tag}</span>

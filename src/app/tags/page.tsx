@@ -91,7 +91,7 @@ export default function TagsPage() {
                   {tagCounts.map(({ tag, count }, index) => (
                     <Link
                       key={tag}
-                      href={`/blog/tag/${encodeURIComponent(tag.toLowerCase())}`}
+                      href={`/blog/tag/${tag.toLowerCase()}`}
                       className="group block"
                     >
                       <div className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 border border-border hover:border-terminal-green/50 hover:bg-terminal-green/5 transition-all">
@@ -124,7 +124,7 @@ export default function TagsPage() {
                     return (
                       <Link
                         key={tag}
-                        href={`/blog/tag/${encodeURIComponent(tag.toLowerCase())}`}
+                        href={`/blog/tag/${tag.toLowerCase()}`}
                         className="group"
                         style={{ fontSize: `${size}rem` }}
                       >

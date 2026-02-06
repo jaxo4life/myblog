@@ -13,7 +13,7 @@ interface TagPageProps {
 export function generateStaticParams() {
   const tags = getAllTags()
   return tags.map((tag) => ({
-    tag: encodeURIComponent(tag.toLowerCase()),
+    tag: tag.toLowerCase(), // 直接使用原始标签名，不编码
   }))
 }
 

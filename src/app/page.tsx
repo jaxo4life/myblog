@@ -205,7 +205,7 @@ export default function HomePage() {
                 {tags.map((tag) => (
                   <Link
                     key={tag}
-                    href={`/blog/tag/${encodeURIComponent(tag.toLowerCase())}`}
+                    href={`/blog/tag/${tag.toLowerCase()}`}
                     className="group"
                   >
                     <span className="tag-array hover:border-terminal-green/50 transition-colors">

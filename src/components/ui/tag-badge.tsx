@@ -10,7 +10,7 @@ interface TagBadgeProps {
 export function TagBadge({ tag, count, className }: TagBadgeProps) {
   return (
     <Link
-      href={`/blog/tag/${encodeURIComponent(tag.toLowerCase())}`}
+      href={`/blog/tag/${tag.toLowerCase()}`}
       className={cn(
         'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm',
         'bg-muted hover:bg-accent text-foreground transition-colors',
