@@ -92,13 +92,25 @@ export function SiteFooter() {
               <ul className="space-y-3">
                 {items.map((item) => (
                   <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className="text-sm text-muted-foreground hover:text-terminal-green transition-colors flex items-center gap-2"
-                    >
-                      {'icon' in item && <item.icon className="h-4 w-4" />}
-                      <span>{item.name}</span>
-                    </Link>
+                    {category === "资源" || category === "社交" ? (
+                      <a
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground hover:text-terminal-green transition-colors flex items-center gap-2"
+                      >
+                        {'icon' in item && <item.icon className="h-4 w-4" />}
+                        <span>{item.name}</span>
+                      </a>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        className="text-sm text-muted-foreground hover:text-terminal-green transition-colors flex items-center gap-2"
+                      >
+                        {'icon' in item && <item.icon className="h-4 w-4" />}
+                        <span>{item.name}</span>
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
