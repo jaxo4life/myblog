@@ -3,7 +3,7 @@ import { getPublishedPosts, getAllTags } from '@/lib/content'
 export const dynamic = 'force-static'
 
 export async function GET() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
+  const siteUrl = 'https://blog.jaxoo.xyz'
   const posts = getPublishedPosts()
   const tags = getAllTags()
 

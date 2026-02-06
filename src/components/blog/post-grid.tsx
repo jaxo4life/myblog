@@ -21,14 +21,16 @@ export function PostGrid({ posts, showHero = true }: PostGridProps) {
     : posts
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full overflow-hidden">
       {heroPost && (
-        <div className="md:col-span-2">
+        <div className="md:col-span-2 w-full min-w-0">
           <PostCard post={heroPost} variant="hero" />
         </div>
       )}
-      {regularPosts.slice(0, heroPost ? 5 : 6).map((post) => (
-        <PostCard key={post.slug} post={post} />
+      {regularPosts.map((post) => (
+        <div key={post.slug} className="w-full min-w-0">
+          <PostCard post={post} />
+        </div>
       ))}
     </div>
   )

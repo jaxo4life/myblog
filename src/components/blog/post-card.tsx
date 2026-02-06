@@ -18,7 +18,7 @@ export function PostCard({ post, variant = 'default' }: PostCardProps) {
     <Link
       href={`/blog/${post.slug}`}
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-lg',
+        'group relative flex flex-col overflow-hidden rounded-lg min-w-0',
         'bg-card-background border border-border',
         'transition-all duration-300 card-hover',
         {
@@ -48,17 +48,17 @@ export function PostCard({ post, variant = 'default' }: PostCardProps) {
       )}
 
       {/* 内容 */}
-      <div className={cn('flex flex-col flex-1 p-5', isHero && 'p-6')}>
+      <div className={cn('flex flex-col flex-1 p-5 min-w-0', isHero && 'p-6')}>
         {/* 文件路径风格的元信息 */}
-        <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground mb-3">
-          <Terminal className="h-3 w-3 text-terminal-green" />
-          <span>~/blog/{post.slug.slice(0, 20)}{post.slug.length > 20 ? '...' : ''}</span>
+        <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground mb-3 overflow-hidden">
+          <Terminal className="h-3 w-3 text-terminal-green flex-shrink-0" />
+          <span className="truncate">~/blog/{post.slug.slice(0, 20)}{post.slug.length > 20 ? '...' : ''}</span>
         </div>
 
         {/* 标题 */}
         <h3
           className={cn(
-            'font-bold text-gradient group-hover:underline decoration-terminal-green/50 underline-offset-4 transition-all',
+            'font-bold text-gradient group-hover:underline decoration-terminal-green/50 underline-offset-4 transition-all overflow-hidden text-ellipsis',
             isHero ? 'text-2xl' : 'text-xl',
             isCompact && 'text-lg'
           )}
@@ -68,27 +68,27 @@ export function PostCard({ post, variant = 'default' }: PostCardProps) {
 
         {/* 摘要 */}
         {!isCompact && (
-          <p className="mt-3 text-sm text-muted-foreground line-clamp-3">
+          <p className="mt-3 text-sm text-muted-foreground line-clamp-3 overflow-hidden">
             {post.summary}
           </p>
         )}
 
         {/* 元信息 - 终端风格 */}
-        <div className={cn('mt-auto pt-4', 'flex flex-wrap items-center gap-4 text-sm font-mono text-muted-foreground')}>
-          <div className="flex items-center gap-1">
-            <span className="text-terminal-green">date:</span>
-            <time dateTime={post.date.toISOString()} className="text-foreground">
+        <div className={cn('mt-auto pt-4', 'flex flex-wrap items-center gap-3 text-sm font-mono text-muted-foreground min-w-0')}>
+          <div className="flex items-center gap-1 min-w-0">
+            <span className="text-terminal-green flex-shrink-0">date:</span>
+            <time dateTime={post.date.toISOString()} className="text-foreground truncate">
               {formatDate(post.date)}
             </time>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-shrink-0">
             <span className="text-cream-gold">read:</span>
             <span className="text-foreground">~{post.readingTime}min</span>
           </div>
         </div>
 
         {/* 标签 - 数组风格 */}
-        <div className={cn('mt-4 flex flex-wrap gap-2', isCompact && 'mt-3')}>
+        <div className={cn('mt-4 flex flex-wrap gap-2 min-w-0', isCompact && 'mt-3')}>
           {post.tags.slice(0, isCompact ? 2 : 3).map((tag: string) => (
             <span
               key={tag}
@@ -98,7 +98,7 @@ export function PostCard({ post, variant = 'default' }: PostCardProps) {
             </span>
           ))}
           {post.tags.length > (isCompact ? 2 : 3) && (
-            <span className="text-xs text-muted-foreground font-mono">
+            <span className="text-xs text-muted-foreground font-mono flex-shrink-0">
               [+{post.tags.length - (isCompact ? 2 : 3)}]
             </span>
           )}

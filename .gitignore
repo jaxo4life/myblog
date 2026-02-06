@@ -35,3 +35,16 @@ next-env.d.ts
 
 # content-collections
 .content-collections
+scripts/fix-broken-image-urls.js
+scripts/fix-double-timestamp.js
+scripts/fix-ipfs-images.js
+scripts/restore-ipfs-links.js
+scripts/reorganize-by-year.js
+scripts/update-ipfs-images.js
+scripts/organize-images.js
+scripts/migrate-xlog.js
+nul
+
+# claude
+.claude
+.claude.md

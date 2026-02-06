@@ -7,6 +7,18 @@ import { marked } from 'marked'
 export function markdownToHtml(markdown: string): string {
   if (!markdown) return ''
 
+  // 预处理：修复格式错误的代码块
+  // 匹配代码块结束标记 ``` 后面直接跟非换行字符的情况
+  // 例如：```- Windows 或 ```***更多***
+  let processed = markdown.replace(/```([^\s\n]*)\n([\s\S]*?)\n```(?!\n)/g, (match, lang, code) => {
+    // 检查代码块后面是否有内容（在同一行或下一行）
+    // 这种情况比较复杂，需要找到 ``` 后面的第一个非换行字符位置
+    return match.replace(/```$/, '```\n')
+  })
+
+  // 更通用的修复：在代码块结束标记后如果没有换行，添加换行
+  processed = processed.replace(/\n```([^\n])/g, '\n```\n$1')
+
   // 配置 marked 选项
   marked.use({
     breaks: false,
@@ -14,7 +26,7 @@ export function markdownToHtml(markdown: string): string {
   })
 
   try {
-    return marked.parse(markdown) as string
+    return marked.parse(processed) as string
   } catch (error) {
     console.error('Markdown to HTML conversion error:', error)
     return markdown

@@ -110,14 +110,14 @@ export function mdxToHtml(mdx: string): string {
   let html = mdx
 
   // 代码块 - 必须先处理，避免内部内容被替换
-  // 支持格式：```lang\ncode\n``` 和 ```lang\ncode\n```\n
-  html = html.replace(/```(\w*)\n([\s\S]*?)\n```(\n|$)/g, (match, lang, code, trailing) => {
+  // 支持格式：```lang\ncode\n``` 后面可以跟任何内容
+  html = html.replace(/```(\w*)\n([\s\S]*?)\n```/g, (match, lang, code) => {
     // 转义 HTML 特殊字符
     const escapedCode = code
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-    return `<pre><code class="language-${lang}">${escapedCode}</code></pre>${trailing}`
+    return `<pre><code class="language-${lang}">${escapedCode}</code></pre>`
   })
 
   // 标题

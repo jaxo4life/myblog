@@ -13,20 +13,54 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { ArrowLeft, GitCommit } from 'lucide-react'
 import Link from 'next/link'
+import { pinyin } from 'pinyin-pro'
 
 type MobileTab = 'content' | 'info'
 
-// 根据标题生成 slug
+// 根据标题生成 slug（支持中文转拼音）
 function generateSlugFromTitle(title: string): string {
   if (!title) return ''
   const currentYear = new Date().getFullYear()
-  // 将标题转为 kebab-case
-  const kebabTitle = title
-    .toLowerCase()
-    .trim()
-    .replace(/[\s\W_]+/g, '-') // 替换非字母数字字符为连字符
-    .replace(/^-+|-+$/g, '') // 移除首尾连字符
+
+  // 分离中文和非中文字符
+  let result = ''
+  let tempWord = ''
+
+  for (const char of title) {
+    // 判断是否为中文字符
+    if (/[\u4e00-\u9fa5]/.test(char)) {
+      // 先把之前累积的英文/数字加入结果
+      if (tempWord) {
+        result += tempWord.toLowerCase()
+        tempWord = ''
+      }
+      // 中文转拼音
+      result += pinyin(char, { toneType: 'none' })
+    } else if (/[a-zA-Z0-9]/.test(char)) {
+      // 英文/数字累积
+      tempWord += char
+    } else if (/\s/.test(char)) {
+      // 空格作为分隔符
+      if (tempWord) {
+        result += tempWord.toLowerCase()
+        tempWord = ''
+      }
+      if (result && !result.endsWith('-')) {
+        result += '-'
+      }
+    }
+  }
+
+  // 处理最后剩余的英文
+  if (tempWord) {
+    result += tempWord.toLowerCase()
+  }
+
+  // 清理多余的连字符
+  const kebabTitle = result
     .replace(/-+/g, '-') // 合并多个连字符
+    .replace(/^-+|-+$/g, '') // 移除首尾连字符
+
   return `${currentYear}/${kebabTitle}`
 }
 

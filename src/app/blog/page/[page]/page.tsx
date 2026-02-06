@@ -37,14 +37,13 @@ export default async function BlogPage({ params }: BlogPageProps) {
     <>
       <SiteHeader />
 
-      <main className="min-h-screen py-12 bg-muted/30 pb-20 md:pb-12">
+      <main className="min-h-screen py-12 bg-muted/30 pb-20 md:pb-12 relative overflow-hidden">
         {/* 背景装饰 */}
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent" />
-        <div className="decorative-blob bg-terminal-green/5 w-64 h-64 -top-32 -right-32" />
-        <div className="decorative-blob bg-cream-gold/5 w-48 h-48 top-20 left-20" />
-        <div className="absolute inset-0 bg-grid opacity-20" />
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent pointer-events-none" />
+        <div className="decorative-blob bg-terminal-green/5 w-64 h-64 -top-32 -right-32 pointer-events-none max-w-none" />
+        <div className="decorative-blob bg-cream-gold/5 w-48 h-48 top-20 left-20 pointer-events-none max-w-none" />
 
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full relative z-10">
           {/* 页面标题 */}
           <div className="mb-12">
             <div className="flex items-center gap-2 mb-4 font-mono text-sm text-muted-foreground">

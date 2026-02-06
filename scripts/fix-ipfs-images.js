@@ -19,8 +19,8 @@ const CONFIG = {
     'https://cloudflare-ipfs.com/ipfs/',
     'https://dweb.link/ipfs/',
   ],
-  imageTimeout: 60000, // 增加超时时间到60秒
-  retries: 3,
+  imageTimeout: 15000, // 超时时间15秒
+  retries: 1, // 只重试1次，加快速度
 };
 
 // 备选 IPFS gateway 列表

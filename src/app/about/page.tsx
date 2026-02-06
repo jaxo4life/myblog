@@ -47,7 +47,7 @@ export default function AboutPage() {
                 <div className="flex-1 min-w-0 overflow-x-auto -mx-2 px-2">
                   <pre className="text-sm sm:text-xs font-mono text-muted-foreground">
 {`{
-  "name": "MyBlog",
+  "name": "jaxo",
   "role": ["开发者", "创作者", "终身学习者"],
   "location": "中国",
   "status": "正在编码中...",
@@ -74,7 +74,7 @@ export default function AboutPage() {
                 <ul className="space-y-2 text-sm font-mono">
                   <li><span className="text-cream-gold">frontend:</span> [React, Next.js, TypeScript, Tailwind]</li>
                   <li><span className="text-cream-gold">backend:</span> [Node.js, PostgreSQL]</li>
-                  <li><span className="text-cream-gold">tools:</span> [Docker, Git, CI/CD]</li>
+                  <li><span className="text-cream-gold">tools:</span> [AI]</li>
                 </ul>
               </div>
             </div>
@@ -101,7 +101,7 @@ export default function AboutPage() {
             </p>
             <div className="flex flex-wrap gap-4 not-prose">
               <a
-                href="https://github.com"
+                href="https://github.com/jaxo4life"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-terminal-outline font-mono"
@@ -109,16 +109,18 @@ export default function AboutPage() {
                 &lt;GitHub /&gt;
               </a>
               <a
-                href="mailto:hello@example.com"
+                href="https://x.com/realjaxo"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn-terminal-outline font-mono"
               >
-                &lt;Email /&gt;
+                &lt;X /&gt;
               </a>
             </div>
 
             <h2>项目开源</h2>
             <p>
-              这个博客的源代码是开源的，你可以在 <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-terminal-green hover:underline">GitHub</a> 上找到。
+              这个博客的源代码是开源的，你可以在 <a href="https://github.com/jaxo4life/myblog" target="_blank" rel="noopener noreferrer" className="text-terminal-green hover:underline">GitHub</a> 上找到。
               欢迎 Star、Fork 或提出 Issue！
             </p>
 

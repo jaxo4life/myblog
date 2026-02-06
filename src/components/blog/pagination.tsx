@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Terminal } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface PaginationProps {
@@ -47,13 +47,13 @@ export function Pagination({ pagination, basePath }: PaginationProps) {
       </div>
 
       {/* 分页控件 */}
-      <div className="flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-2 flex-wrap">
         {/* 上一页 */}
         {hasPrevPage ? (
           <Link
-            href={`${basePath}?page=${currentPage - 1}`}
+            href={`${basePath}/${currentPage - 1}`}
             className={cn(
-              'inline-flex items-center gap-1.5 px-4 py-2 rounded-md font-mono text-sm',
+              'inline-flex items-center gap-1.5 px-3 py-2 rounded-md font-mono text-sm',
               'border border-border hover:border-terminal-green/50',
               'text-foreground hover:text-terminal-green hover:bg-terminal-green/5',
               'transition-all'
@@ -61,17 +61,17 @@ export function Pagination({ pagination, basePath }: PaginationProps) {
             aria-label="上一页"
           >
             <ChevronLeft className="h-4 w-4" />
-            cd ../prev
+            <span className="hidden sm:inline">prev</span>
           </Link>
         ) : (
           <span
             className={cn(
-              'inline-flex items-center gap-1.5 px-4 py-2 rounded-md font-mono text-sm',
+              'inline-flex items-center gap-1.5 px-3 py-2 rounded-md font-mono text-sm',
               'border border-border text-muted-foreground cursor-not-allowed'
             )}
           >
             <ChevronLeft className="h-4 w-4" />
-            cd ../prev
+            <span className="hidden sm:inline">prev</span>
           </span>
         )}
 
@@ -91,7 +91,7 @@ export function Pagination({ pagination, basePath }: PaginationProps) {
             return (
               <Link
                 key={page}
-                href={`${basePath}?page=${page}`}
+                href={`${basePath}/${page}`}
                 className={cn(
                   'inline-flex items-center justify-center w-10 h-10 rounded-md font-mono text-sm',
                   'border transition-all duration-200',
@@ -116,26 +116,26 @@ export function Pagination({ pagination, basePath }: PaginationProps) {
         {/* 下一页 */}
         {hasNextPage ? (
           <Link
-            href={`${basePath}?page=${currentPage + 1}`}
+            href={`${basePath}/${currentPage + 1}`}
             className={cn(
-              'inline-flex items-center gap-1.5 px-4 py-2 rounded-md font-mono text-sm',
+              'inline-flex items-center gap-1.5 px-3 py-2 rounded-md font-mono text-sm',
               'border border-border hover:border-terminal-green/50',
               'text-foreground hover:text-terminal-green hover:bg-terminal-green/5',
               'transition-all'
             )}
             aria-label="下一页"
           >
-            cd ../next
+            <span className="hidden sm:inline">next</span>
             <ChevronRight className="h-4 w-4" />
           </Link>
         ) : (
           <span
             className={cn(
-              'inline-flex items-center gap-1.5 px-4 py-2 rounded-md font-mono text-sm',
+              'inline-flex items-center gap-1.5 px-3 py-2 rounded-md font-mono text-sm',
               'border border-border text-muted-foreground cursor-not-allowed'
             )}
           >
-            cd ../next
+            <span className="hidden sm:inline">next</span>
             <ChevronRight className="h-4 w-4" />
           </span>
         )}

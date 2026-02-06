@@ -54,6 +54,17 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: 'rlig' 1, 'calt' 1;
+    /* 防止移动端横向溢出 */
+    overflow-x: hidden;
+    width: 100vw;
+    max-width: 100vw;
+  }
+
+  /* 防止移动端横向溢出 */
+  #__next {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
   }
 
   /* 平滑滚动 */
@@ -69,13 +80,9 @@
   /* 移动端防止横向溢出 - 全局规则 */
   @media (max-width: 768px) {
     html, body {
-      overflow-x: hidden;
-      max-width: 100vw;
-    }
-
-    /* 确保所有元素不超出视口 */
-    * {
-      max-width: 100%;
+      overflow-x: hidden !important;
+      max-width: 100vw !important;
+      width: 100vw !important;
     }
 
     /* 装饰性光晕不造成溢出 */
@@ -88,6 +95,25 @@
     main {
       overflow-x: hidden;
       width: 100%;
+      max-width: 100vw;
+    }
+
+    /* 所有容器不溢出 */
+    div, section, article, header, footer, nav {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    /* grid 容器不溢出 */
+    .grid {
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    /* 分页按钮容器防溢出 */
+    nav[aria-label="分页导航"] > div {
+      flex-wrap: wrap;
+      max-width: 100%;
     }
   }
 }
@@ -261,6 +287,7 @@
   right: 0;
   background: hsl(0 0% 12%);
   border-bottom: 1px solid hsl(0 0% 20%);
+  z-index: 10;
 }
 
 .prose pre {
@@ -273,6 +300,20 @@
   background: hsl(0 0% 12%);
   border-bottom: 1px solid hsl(0 0% 20%);
   border-radius: 0.5rem 0.5rem 0 0;
+  z-index: 10;
+}
+
+/* 为代码内容添加顶部内边距，避免被控制点遮挡 */
+.prose pre > code {
+  padding-top: 2.5rem !important;
+  display: block !important;
+}
+
+/* 移动端调整 */
+@media (max-width: 768px) {
+  .prose pre > code {
+    padding-top: 2rem !important;
+  }
 }
 
 /* 防止内容溢出 */
@@ -390,9 +431,13 @@
 }
 
 /* 标签样式 - 数组风格 */
+/* 标签样式 - 数组风格 */
 .tag-array {
-  @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-secondary border border-border text-sm;
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-secondary border border-border text-sm;
   font-family: 'Monaco', 'Menlo', monospace;
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .tag-array::before,
@@ -403,6 +448,14 @@
 
 .tag-array::after {
   content: ']';
+}
+
+/* 移动端标签更小 */
+@media (max-width: 768px) {
+  .tag-array {
+    font-size: 0.7rem;
+    padding: 0.125rem 0.5rem;
+  }
 }
 
 /* 按钮终端风格 */
@@ -556,13 +609,23 @@
     word-break: break-word;
   }
 
+  /* 编辑器内代码块 - 确保不溢出 */
   .ProseMirror pre {
-    overflow-x: auto;
+    overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
     white-space: pre;
     font-size: 0.75rem;
     max-width: 100%;
     word-break: normal;
+    padding: 0.75rem !important;
+    margin: 0.5rem 0 !important;
+  }
+
+  /* 编辑器内代码块内部元素 */
+  .ProseMirror pre code {
+    white-space: pre !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
   }
 
   /* 编辑器内表格 */
