@@ -40,7 +40,7 @@ export function SiteHeader() {
             <span className="text-terminal-green/50 flex-shrink-0">:</span>
             <span className="text-foreground truncate">{pathname === '/' ? '~' : pathname.replace('/blog/', '').replace('/tags', 'tags')}</span>
             <span className="ml-auto flex items-center gap-3 flex-shrink-0">
-              <a href="/rss.xml" className="hover:text-terminal-green transition-colors">
+              <a href="/rss.xml" target="_blank" rel="noopener noreferrer" className="hover:text-terminal-green transition-colors">
                 <Rss className="h-3 w-3" />
               </a>
               <a href="https://github.com/jaxo4life/myblog" target="_blank" rel="noopener noreferrer" className="hover:text-terminal-green transition-colors">
@@ -75,7 +75,7 @@ export function SiteHeader() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    'relative px-4 py-2 text-sm font-medium transition-all',
+                    'relative px-16 py-2 text-sm font-medium transition-all',
                     'font-mono rounded-md',
                     'border border-transparent hover:border-terminal-green/30',
                     isActive ? 'text-terminal-green bg-terminal-green/5 border-terminal-green/20' : 'text-muted-foreground hover:text-foreground'
