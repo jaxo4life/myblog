@@ -1,11 +1,11 @@
 import { defineCollection, defineConfig } from '@content-collections/core'
 import { compileMDX } from '@content-collections/mdx'
 import { z } from 'zod'
-import { pinyin } from 'pinyin-pro'
 import rehypeShiki from '@shikijs/rehype'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
+import rehypeSlugPinyin from './src/lib/rehype-slug-pinyin'
+import { Slugger } from './src/lib/slug'
 
 const posts = defineCollection({
   name: 'Post',
@@ -24,7 +24,7 @@ const posts = defineCollection({
     const mdx = await compileMDX(context, document, {
       remarkPlugins: [remarkGfm],
       rehypePlugins: [
-        rehypeSlug,
+        rehypeSlugPinyin,
         [
           rehypeShiki,
           {
@@ -60,54 +60,18 @@ const posts = defineCollection({
       level: number
     }> = []
 
-    // 用于跟踪已使用的 id，确保唯一性
-    const usedIds = new Set<string>()
+    // 使用共享的 Slugger 确保与 rehype 插件生成的 ID 一致
+    const slugger = new Slugger()
 
     const headingRegex = /^#{1,3}\s+(.+)$/gm
     let match
     while ((match = headingRegex.exec(document.content)) !== null) {
       const level = match[0].match(/^#+/)?.[0].length || 2
       const text = match[1].trim()
-      // 移除 markdown 格式符号
-      const cleanText = text
-        .replace(/\*\*/g, '')
-        .replace(/\*/g, '')
-        .replace(/`/g, '')
-        .replace(/\[[^\]]+\]/g, '')
 
-      // 生成 id：中文转拼音，英文保留
-      let idPart = ''
-      for (const char of cleanText) {
-        if (/[\u4e00-\u9fa5]/.test(char)) {
-          // 中文转拼音
-          idPart += pinyin(char, { toneType: 'none' })
-        } else if (/[a-zA-Z0-9]/.test(char)) {
-          // 英文/数字保留
-          idPart += char.toLowerCase()
-        } else if (/\s/.test(char)) {
-          // 空格转为连字符
-          if (idPart && !idPart.endsWith('-')) {
-            idPart += '-'
-          }
-        }
-      }
+      // 使用共享的 slug 生成器
+      const id = slugger.slug(text)
 
-      let id = idPart.replace(/-+/g, '-').replace(/^-+|-+$/g, '')
-
-      // 如果 id 为空或已存在，添加序号后缀
-      if (!id) {
-        id = `heading-${headings.length + 1}`
-      } else {
-        let counter = 1
-        let uniqueId = id
-        while (usedIds.has(uniqueId)) {
-          uniqueId = `${id}-${counter}`
-          counter++
-        }
-        id = uniqueId
-      }
-
-      usedIds.add(id)
       headings.push({ id, text, level })
     }
 
