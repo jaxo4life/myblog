@@ -1,9 +1,13 @@
 ---
-title: 用 Mihomo Listeners 替代 Passwall2 —— 一行配置开一个节点
+title: '用 Mihomo Listeners 替代 Passwall2 : 一行配置开一个节点'
 date: '2026-05-16'
-summary: ''
-tags: []
-draft: true
+summary: >-
+  Mihomo（Clash.Meta）原生支持 `listeners` 功能，可以为每个代理节点开一个独立的SOCKS5/HTTP
+  端口。这意味着你不再需要安装 Passwall2 之类的额外插件——只需在`config.yaml` 里加几行
+  YAML，就能实现「每个节点一个端口，即连即用」的效果。本文从原理、配置到使用，三步讲清楚。
+tags:
+  - 教程
+draft: false
 cover: ''
 featured: false
 ---
@@ -27,26 +31,27 @@ featured: false
 在 Mihomo 的 `config.yaml` 末尾添加 `listeners` 段即可：
 
 ```yaml
+# 以下节点名称和端口号均为示例，请替换为你自己的节点名和可用端口
 listeners:
   - name: socks5-hk01       # 监听器名称（自定义，方便识别）
     type: socks              # 协议类型：socks 或 http
-    port: 10001              # 监听端口
-    proxy: "🇭🇰 HKG 01"      # 对应 proxies 中的节点名称
+    port: 10001              # 监听端口（自行规划，避免冲突）
+    proxy: "香港节点A"       # 必须与 proxies 中的节点名完全一致
 
   - name: http-hk01
     type: http
     port: 10201
-    proxy: "🇭🇰 HKG 01"
+    proxy: "香港节点A"
 
   - name: socks5-jp01
     type: socks
-    port: 10046
-    proxy: "🇯🇵 JPN 01"
+    port: 10002
+    proxy: "日本节点B"
 
   - name: http-jp01
     type: http
-    port: 10246
-    proxy: "🇯🇵 JPN 01"
+    port: 10202
+    proxy: "日本节点B"
 ```
 
 就这些。重启 Mihomo 后立即生效。
@@ -80,7 +85,7 @@ HTTP   端口：10201、10202、10203 ...（偏移 200）
 curl --socks5 127.0.0.1:10001 https://ipinfo.io
 
 # 走日本节点
-curl --proxy http://127.0.0.1:10246 https://ipinfo.io
+curl --proxy http://127.0.0.1:10202 https://ipinfo.io
 ```
 
 浏览器可用 SwitchyOmega 等插件按规则或手动切换到指定端口。
@@ -89,64 +94,65 @@ curl --proxy http://127.0.0.1:10246 https://ipinfo.io
 
 ## 完整示例
 
-以下是一个覆盖多地区的完整 `listeners` 配置片段：
+以下是一个覆盖多地区的完整 `listeners` 配置片段（节点名称和端口均为示例）：
 
 ```yaml
+# 所有节点名称请替换为你订阅中实际的节点名
 listeners:
   # 香港
-  - name: socks5-1
+  - name: socks5-hk01
     type: socks
     port: 10001
-    proxy: "🇭🇰 HKG 01"
+    proxy: "香港节点A"
 
-  - name: http-1
+  - name: http-hk01
     type: http
     port: 10201
-    proxy: "🇭🇰 HKG 01"
+    proxy: "香港节点A"
 
   # 台湾
-  - name: socks5-21
+  - name: socks5-tw01
     type: socks
-    port: 10021
-    proxy: "🇨🇳 TWN 01"
+    port: 10002
+    proxy: "台湾节点A"
 
-  - name: http-21
+  - name: http-tw01
     type: http
-    port: 10221
-    proxy: "🇨🇳 TWN 01"
+    port: 10202
+    proxy: "台湾节点A"
 
   # 新加坡
-  - name: socks5-26
+  - name: socks5-sg01
     type: socks
-    port: 10026
-    proxy: "🇸🇬 SGP 01"
+    port: 10003
+    proxy: "新加坡节点A"
 
-  - name: http-26
+  - name: http-sg01
     type: http
-    port: 10226
-    proxy: "🇸🇬 SGP 01"
+    port: 10203
+    proxy: "新加坡节点A"
 
   # 日本
-  - name: socks5-46
+  - name: socks5-jp01
     type: socks
-    port: 10046
-    proxy: "🇯🇵 JPN 01"
+    port: 10004
+    proxy: "日本节点A"
 
-  - name: http-46
+  - name: http-jp01
     type: http
-    port: 10246
-    proxy: "🇯🇵 JPN 01"
+    port: 10204
+    proxy: "日本节点A"
 
   # 美国
-  - name: socks5-64
+  - name: socks5-us01
     type: socks
-    port: 10064
-    proxy: "🇺🇸 USA 01"
+    port: 10005
+    proxy: "美国节点A"
 
-  - name: http-64
+  - name: http-us01
     type: http
-    port: 10264
-    proxy: "🇺🇸 USA 01"
+    port: 10205
+    proxy: "美国节点A"
 ```
 
 ## 注意事项
@@ -157,3 +163,103 @@ listeners:
 - 如果开了防火墙，记得放行对应端口。
 - `allow-lan: true` 时，局域网设备也可通过 `IP:端口` 使用对应节点。
 - 在 OpenWrt 上可以写个简单脚本，从订阅自动生成 `listeners` 段，彻底替代 Passwall2 的订阅管理。
+
+---
+
+## AI 操作指南
+
+以下是为 AI 助手提供的操作步骤，如果你是 AI，请严格按照以下流程执行：
+
+### 步骤 1：读取现有配置
+
+找到 Mihomo 的 `config.yaml` 文件（常见路径：`/etc/mihomo/config.yaml`），读取其中 `proxies` 段的内容，提取所有节点名称。
+
+节点名称通常类似以下格式（含 emoji 前缀）：
+
+```
+🇭🇰 香港节点A
+🇯🇵 日本节点B
+🇺🇸 美国节点C
+```
+
+**必须原样保留节点名称中的 emoji、空格和大小写**，任何偏差都会导致 listener 无法匹配到节点。
+
+### 步骤 2：生成 listeners 配置
+
+对每个需要独立端口的节点，生成一对 SOCKS5 + HTTP 监听器。端口从 `10001` 起递增，HTTP 端口偏移 `200`：
+
+```yaml
+listeners:
+  - name: socks5-1          # 序号递增
+    type: socks
+    port: 10001              # SOCKS5 端口从 10001 起
+    proxy: "从步骤1复制的节点名"
+
+  - name: http-1
+    type: http
+    port: 10201              # HTTP 端口 = SOCKS5 端口 + 200
+    proxy: "从步骤1复制的节点名"
+```
+
+为每个节点重复上述结构，依次递增 name 的序号和端口号。
+
+### 步骤 3：写入配置
+
+将生成的 `listeners` 段追加到 `config.yaml` 文件末尾。如果文件中已存在 `listeners` 段，则替换整个段。
+
+### 步骤 4：重启服务
+
+```bash
+# systemd 管理的情况
+systemctl restart mihomo
+
+# 或 OpenWrt 的 service 方式
+service mihomo restart
+```
+
+### 步骤 5：生成节点映射页面
+
+为方便用户查看和复制代理地址，生成一个单文件 HTML 页面（如 `mihomo-nodes.html`），包含以下功能：
+
+- **卡片式展示**每个节点的名称、SOCKS5 端口、HTTP 端口
+- **按地区筛选**按钮（全部、香港、台湾、新加坡、日本、美国、欧洲等）
+- **搜索框**支持按节点名或端口号搜索
+- **一键复制**按钮，点击即复制完整的代理地址（如 `socks5://10.0.0.20:10001`）
+- 深色主题，适配移动端
+
+页面数据结构为一个 JavaScript 数组，每个节点包含：
+
+```javascript
+var nodes = [
+  {id: 1, name: "节点名称", region: "HK", socks5: 10001, http: 10201},
+  {id: 2, name: "节点名称", region: "JP", socks5: 10002, http: 10202},
+  // ...所有节点
+];
+```
+
+地区分类规则（`region` 字段）：
+
+| region 值 | 匹配条件 |
+|-----------|---------|
+| `HK` | 节点名含香港/HK/HKG |
+| `TW` | 节点名含台湾/TW/TWN |
+| `SG` | 节点名含新加坡/SG/SGP |
+| `KR` | 节点名含韩国/KR/KOR |
+| `JP` | 节点名含日本/JP/JPN |
+| `US` | 节点名含美国/US/USA |
+| `EU` | 节点名含欧洲国家（DE/FR/GB/NL/PL/ES/RU/IS/DK/TR...） |
+| `other` | 其余地区 |
+
+头部 meta 区域显示：服务器 IP、节点总数、SOCKS5 端口范围、HTTP 端口范围。
+
+IP 地址从服务器获取（如 `hostname -I | awk '{print $1}'`），写入页面顶部的 `IP` 变量和 meta 显示区。
+
+### 步骤 6：验证
+
+```bash
+# 检查端口是否已监听
+ss -tlnp | grep mihomo
+
+# 测试某个节点是否生效（替换端口和预期 IP）
+curl --socks5 127.0.0.1:10001 https://ipinfo.io/ip
+```
