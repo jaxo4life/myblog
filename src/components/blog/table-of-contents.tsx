@@ -15,6 +15,7 @@ interface TableOfContentsProps {
 
 export function TableOfContents({ headings }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('')
+  const h2Headings = headings.filter((h) => h.level === 2)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -31,15 +32,15 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
       }
     )
 
-    headings.forEach(({ id }) => {
+    h2Headings.forEach(({ id }) => {
       const element = document.getElementById(id)
       if (element) observer.observe(element)
     })
 
     return () => observer.disconnect()
-  }, [headings])
+  }, [h2Headings])
 
-  if (headings.length === 0) return null
+  if (h2Headings.length === 0) return null
 
   return (
     <nav className="hidden lg:block" aria-label="目录">
@@ -48,14 +49,13 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
           目录
         </h4>
         <ul className="space-y-1 border-l border-border">
-          {headings.map(({ id, text, level }) => (
+          {h2Headings.map(({ id, text }) => (
             <li key={id}>
               <a
                 href={`#${id}`}
                 className={cn(
                   'toc-link',
-                  activeId === id && 'active',
-                  level === 3 && 'pl-6'
+                  activeId === id && 'active'
                 )}
                 onClick={(e) => {
                   e.preventDefault()
