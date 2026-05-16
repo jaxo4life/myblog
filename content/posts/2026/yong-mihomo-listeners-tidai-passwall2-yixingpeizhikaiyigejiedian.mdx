@@ -1,10 +1,10 @@
 ---
-title: '用 Mihomo Listeners 一行配置开一个节点'
+title: 用 Mihomo Listeners 一行配置开一个节点
 date: '2026-05-16'
 summary: >-
-  在 OpenWrt 上，Passwall2 可以轻松为每个代理节点开独立端口。但 Passwall2 只适用于
-  OpenWrt，Linux 服务器或其他环境下怎么办？Mihomo 原生支持 `listeners`
-  功能，只需在 `config.yaml` 里加几行 YAML，就能在任何环境实现「每个节点一个端口，即连即用」的效果。
+  在 OpenWrt 上，Passwall2 可以轻松为每个代理节点开独立端口。但 Passwall2 只适用于 OpenWrt，Linux
+  服务器或其他环境下怎么办？Mihomo 原生支持 `listeners` 功能，只需在 `config.yaml` 里加几行
+  YAML，就能在任何环境实现「每个节点一个端口，即连即用」的效果。
 tags:
   - 教程
 draft: false
@@ -92,7 +92,9 @@ curl --proxy http://127.0.0.1:10202 https://ipinfo.io
 浏览器可用 SwitchyOmega 等插件按规则或手动切换到指定端口。
 
 **或者也可以用我让ai写的一款极简代理扩展**
-![LiteProxy](https://gh-card.dev/repos/jaxo4life/liteproxy.svg)
+<a href="https://github.com/jaxo4life/liteproxy" target="_blank" rel="noopener noreferrer">
+  ![LiteProxy](https://gh-card.dev/repos/jaxo4life/liteproxy.svg)
+</a>
 
 在 OpenWrt 路由器上，结合防火墙规则或策略路由，可以让局域网内不同设备/IP 走不同的节点端口，实现和 Passwall2 一样的按设备分流效果。
 

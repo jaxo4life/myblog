@@ -13,7 +13,7 @@ export default function AdminPage() {
   const [publishing, setPublishing] = useState(false)
   const [publishMessage, setPublishMessage] = useState('')
   const [changeCount, setChangeCount] = useState(0)
-  const [changeFiles, setChangeFiles] = useState('')
+  const [changeFiles, setChangeFiles] = useState<string[]>([])
 
   useEffect(() => {
     fetchPosts()
@@ -27,9 +27,13 @@ export default function AdminPage() {
       if (data.success) {
         const files = data.status ? data.status.split('\n').filter(Boolean) : []
         setChangeCount(files.length)
-        setChangeFiles(files.join('\n'))
+        setChangeFiles(files)
       }
     } catch {}
+  }
+
+  function isPostModified(slug: string) {
+    return changeFiles.some(f => f.includes(`content/posts/${slug}.mdx`))
   }
 
   async function fetchPosts() {
@@ -108,7 +112,7 @@ export default function AdminPage() {
               onClick={handlePublish}
               disabled={publishing || changeCount === 0}
               className="btn-terminal-outline flex items-center gap-2 text-sm"
-              title={changeCount > 0 ? `待发布文件：\n${changeFiles}` : '没有需要发布的更改'}
+              title={changeCount > 0 ? `待发布文件：\n${changeFiles.join('\n')}` : '没有需要发布的更改'}
             >
               <GitCommit className="h-4 w-4" />
               {publishing ? '发布中...' : changeCount > 0 ? `发布 (${changeCount})` : '无更改'}
@@ -143,7 +147,11 @@ export default function AdminPage() {
                     <h3 className="font-semibold text-foreground truncate">{post.title}</h3>
                     <p className="text-xs text-muted-foreground font-mono mt-1">{post.slug}</p>
                   </div>
-                  {post.draft ? (
+                  {isPostModified(post.slug) ? (
+                    <span className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs">
+                      有改动
+                    </span>
+                  ) : post.draft ? (
                     <span className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-yellow-500/10 text-yellow-600 text-xs">
                       <EyeOff className="h-3 w-3" />
                       草稿
@@ -258,7 +266,11 @@ export default function AdminPage() {
                         {formatDate(new Date(post.date))}
                       </td>
                       <td className="px-6 py-4">
-                        {post.draft ? (
+                        {isPostModified(post.slug) ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs">
+                            有改动
+                          </span>
+                        ) : post.draft ? (
                           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-yellow-500/10 text-yellow-600 text-xs">
                             <EyeOff className="h-3 w-3" />
                             草稿
