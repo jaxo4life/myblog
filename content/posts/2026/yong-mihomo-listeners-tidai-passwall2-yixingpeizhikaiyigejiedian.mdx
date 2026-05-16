@@ -1,26 +1,27 @@
 ---
-title: '用 Mihomo Listeners 替代 Passwall2 : 一行配置开一个节点'
+title: '用 Mihomo Listeners 一行配置开一个节点'
 date: '2026-05-16'
 summary: >-
-  Mihomo（Clash.Meta）原生支持 `listeners` 功能，可以为每个代理节点开一个独立的SOCKS5/HTTP
-  端口。这意味着你不再需要安装 Passwall2 之类的额外插件——只需在`config.yaml` 里加几行
-  YAML，就能实现「每个节点一个端口，即连即用」的效果。本文从原理、配置到使用，三步讲清楚。
+  在 OpenWrt 上，Passwall2 可以轻松为每个代理节点开独立端口。但 Passwall2 只适用于
+  OpenWrt，Linux 服务器或其他环境下怎么办？Mihomo 原生支持 `listeners`
+  功能，只需在 `config.yaml` 里加几行 YAML，就能在任何环境实现「每个节点一个端口，即连即用」的效果。
 tags:
   - 教程
 draft: false
 cover: ''
 featured: false
 ---
-## 为什么要替代 Passwall2
+## 为什么需要 Mihomo Listeners
 
-在 OpenWrt 上，很多人用 Passwall2 来实现「每个代理节点开一个独立端口」，然后按设备分流——手机走日本、电视走香港、爬虫走美国。
+在 OpenWrt 上，Passwall2 这类插件可以轻松实现「每个代理节点开一个独立端口」，然后按设备分流：手机走日本、电视走香港、爬虫走美国。
 
-但 Passwall2 本质上是个"套壳"：它底层调用的是 Xray/V2Ray 等核心，自己维护一套订阅解析和节点管理逻辑，和 Mihomo 是完全独立的体系。如果你本身就在用 Mihomo 作为代理核心，再装一个 Passwall2 就显得多余了。
+但 Passwall2 只能运行在 OpenWrt 上。如果你有一台 Linux 服务器、NAS 或者其他环境，也想实现同样的效果（每个节点一个端口，即连即用），就没有现成的图形化工具了。
 
-**Mihomo 原生支持 `listeners` 功能**——在配置文件里加几行，就能实现 Passwall2 同样的效果：每个节点一个独立端口，即连即用。不再需要额外的中间层。
+好在 **Mihomo 原生支持 `listeners` 功能**，在配置文件里加几行 YAML 就能搞定。不依赖任何额外插件，任何能跑 Mihomo 的环境都能用。
 
 | | Passwall2 | Mihomo Listeners |
 |---|---|---|
+| 运行环境 | 仅 OpenWrt | 任何能跑 Mihomo 的环境 |
 | 额外安装 | 需要 | 不需要 |
 | 节点来源 | 独立订阅，与 Mihomo 不同步 | 直接用 Mihomo 已有的节点 |
 | 配置方式 | Luci 界面点来点去 | YAML 加几行，可脚本批量生成 |
@@ -30,7 +31,7 @@ featured: false
 
 在 Mihomo 的 `config.yaml` 末尾添加 `listeners` 段即可：
 
-```yaml
+```
 # 以下节点名称和端口号均为示例，请替换为你自己的节点名和可用端口
 listeners:
   - name: socks5-hk01       # 监听器名称（自定义，方便识别）
@@ -80,7 +81,7 @@ HTTP   端口：10201、10202、10203 ...（偏移 200）
 
 配置好后，直接将客户端指向对应端口：
 
-```bash
+```
 # 走香港节点
 curl --socks5 127.0.0.1:10001 https://ipinfo.io
 
@@ -90,13 +91,16 @@ curl --proxy http://127.0.0.1:10202 https://ipinfo.io
 
 浏览器可用 SwitchyOmega 等插件按规则或手动切换到指定端口。
 
+**或者也可以用我让ai写的一款极简代理扩展**
+![LiteProxy](https://gh-card.dev/repos/jaxo4life/liteproxy.svg)
+
 在 OpenWrt 路由器上，结合防火墙规则或策略路由，可以让局域网内不同设备/IP 走不同的节点端口，实现和 Passwall2 一样的按设备分流效果。
 
 ## 完整示例
 
 以下是一个覆盖多地区的完整 `listeners` 配置片段（节点名称和端口均为示例）：
 
-```yaml
+```
 # 所有节点名称请替换为你订阅中实际的节点名
 listeners:
   # 香港
@@ -188,7 +192,7 @@ listeners:
 
 对每个需要独立端口的节点，生成一对 SOCKS5 + HTTP 监听器。端口从 `10001` 起递增，HTTP 端口偏移 `200`：
 
-```yaml
+```
 listeners:
   - name: socks5-1          # 序号递增
     type: socks
@@ -209,7 +213,7 @@ listeners:
 
 ### 步骤 4：重启服务
 
-```bash
+```
 # systemd 管理的情况
 systemctl restart mihomo
 
@@ -229,7 +233,7 @@ service mihomo restart
 
 页面数据结构为一个 JavaScript 数组，每个节点包含：
 
-```javascript
+```
 var nodes = [
   {id: 1, name: "节点名称", region: "HK", socks5: 10001, http: 10201},
   {id: 2, name: "节点名称", region: "JP", socks5: 10002, http: 10202},
@@ -256,7 +260,7 @@ IP 地址从服务器获取（如 `hostname -I | awk '{print $1}'`），写入�
 
 ### 步骤 6：验证
 
-```bash
+```
 # 检查端口是否已监听
 ss -tlnp | grep mihomo
 
