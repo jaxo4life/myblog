@@ -12,10 +12,25 @@ export default function AdminPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [publishing, setPublishing] = useState(false)
   const [publishMessage, setPublishMessage] = useState('')
+  const [changeCount, setChangeCount] = useState(0)
+  const [changeFiles, setChangeFiles] = useState('')
 
   useEffect(() => {
     fetchPosts()
+    checkGitStatus()
   }, [])
+
+  async function checkGitStatus() {
+    try {
+      const res = await fetch('/api/admin/git/publish')
+      const data = await res.json()
+      if (data.success) {
+        const files = data.status ? data.status.split('\n').filter(Boolean) : []
+        setChangeCount(files.length)
+        setChangeFiles(files.join('\n'))
+      }
+    } catch {}
+  }
 
   async function fetchPosts() {
     try {
@@ -66,6 +81,7 @@ export default function AdminPage() {
       setPublishMessage('✗ 发布失败: ' + error.message)
     } finally {
       setPublishing(false)
+      checkGitStatus()
       setTimeout(() => setPublishMessage(''), 5000)
     }
   }
@@ -90,12 +106,12 @@ export default function AdminPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={handlePublish}
-              disabled={publishing}
+              disabled={publishing || changeCount === 0}
               className="btn-terminal-outline flex items-center gap-2 text-sm"
-              title="一键发布到 Git"
+              title={changeCount > 0 ? `待发布文件：\n${changeFiles}` : '没有需要发布的更改'}
             >
               <GitCommit className="h-4 w-4" />
-              {publishing ? '发布中...' : '发布'}
+              {publishing ? '发布中...' : changeCount > 0 ? `发布 (${changeCount})` : '无更改'}
             </button>
             <Link
               href="/admin/edit/new"

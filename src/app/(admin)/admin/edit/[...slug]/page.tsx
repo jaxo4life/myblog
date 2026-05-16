@@ -90,6 +90,8 @@ export default function EditPostPage() {
   const [saving, setSaving] = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [message, setMessage] = useState('')
+  const [changeCount, setChangeCount] = useState(0)
+  const [changeFiles, setChangeFiles] = useState('')
 
   useEffect(() => {
     if (slug && slug !== 'new') {
@@ -97,7 +99,20 @@ export default function EditPostPage() {
     } else {
       setLoading(false)
     }
+    checkGitStatus()
   }, [slug])
+
+  async function checkGitStatus() {
+    try {
+      const res = await fetch('/api/admin/git/publish')
+      const data = await res.json()
+      if (data.success) {
+        const files = data.status ? data.status.split('\n').filter(Boolean) : []
+        setChangeCount(files.length)
+        setChangeFiles(files.join('\n'))
+      }
+    } catch {}
+  }
 
   // 标题变化时自动生成 slug（仅新建文章且用户未手动编辑过 slug 时）
   useEffect(() => {
@@ -186,6 +201,7 @@ export default function EditPostPage() {
       setMessage('✗ 发布失败: ' + error.message)
     } finally {
       setPublishing(false)
+      checkGitStatus()
       setTimeout(() => setMessage(''), 5000)
     }
   }
@@ -217,12 +233,12 @@ export default function EditPostPage() {
             <button
               type="button"
               onClick={handlePublish}
-              disabled={publishing}
+              disabled={publishing || changeCount === 0}
               className="btn-terminal-outline flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-transparent border border-border text-foreground hover:border-terminal-green/50 hover:text-terminal-green disabled:opacity-50 disabled:cursor-not-allowed"
-              title="保存并发布到 Git"
+              title={changeCount > 0 ? `待发布文件：\n${changeFiles}` : '没有需要发布的更改'}
             >
               <GitCommit className="h-4 w-4" />
-              <span className="hidden sm:inline">{publishing ? '发布中...' : '发布'}</span>
+              <span className="hidden sm:inline">{publishing ? '发布中...' : changeCount > 0 ? `发布 (${changeCount})` : '无更改'}</span>
             </button>
             <Button type="button" variant="outline" onClick={() => router.push('/admin')}>
               取消
