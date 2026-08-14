@@ -147,8 +147,80 @@ export async function updatePost(slug: string, post: PostData): Promise<void> {
   await createPost(post)
 }
 
-// 删除文章
+// 提取一篇文章引用的本地上传图片 URL（cover + markdown 图片），用于孤儿图片清理
+export function extractImageUrls(content: string, cover?: string): string[] {
+  const urls = new Set<string>()
+  if (cover && cover.startsWith('/uploads/')) urls.add(cover)
+  for (const m of content.matchAll(/!\[[^\]]*\]\(([^)\s]+)/g)) {
+    if (m[1].startsWith('/uploads/')) urls.add(m[1])
+  }
+  return Array.from(urls)
+}
+
+// 安全删除一张上传图片（仅限 public/uploads 内，防路径穿越）
+async function deleteUploadImage(url: string): Promise<void> {
+  if (!url.startsWith('/uploads/')) return
+  const resolved = path.resolve(process.cwd(), 'public', url)
+  const base = path.resolve(process.cwd(), 'public/uploads')
+  if (!resolved.startsWith(base + path.sep)) return
+  try {
+    await unlink(resolved)
+  } catch {
+    // 文件不存在或已删除
+  }
+}
+
+// 收集所有文章（除 excludeSlug）引用的上传图片，用于判断图片是否还被其他文章使用
+async function collectReferencedImages(excludeSlug: string): Promise<Set<string>> {
+  const referenced = new Set<string>()
+  async function walk(dir: string) {
+    const entries = await readdir(dir, { withFileTypes: true })
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name)
+      if (entry.isDirectory()) {
+        await walk(full)
+      } else if (entry.name.endsWith('.mdx')) {
+        const raw = await readFile(full, 'utf-8')
+        const { data, content: body } = matter(raw)
+        const rel = path.relative(CONTENT_DIR, full).replace(/\.mdx$/, '').replace(/\\/g, '/')
+        if (rel === excludeSlug) continue
+        extractImageUrls(body, data.cover as string | undefined).forEach((u) => referenced.add(u))
+      }
+    }
+  }
+  await walk(CONTENT_DIR)
+  return referenced
+}
+
+// 删除文章：删 .mdx + 清理「仅被本文章引用」的孤儿图片
 export async function deletePost(slug: string): Promise<void> {
   const filePath = resolvePostFile(slug)
+
+  // 1. 先读文章，提取其引用的图片
+  let targetImages: string[] = []
+  try {
+    const raw = await readFile(filePath, 'utf-8')
+    const { data, content: body } = matter(raw)
+    targetImages = extractImageUrls(body, data.cover as string | undefined)
+  } catch {
+    // 读不到则跳过图片清理
+  }
+
+  // 2. 删除 .mdx
   await unlink(filePath)
+
+  // 3. 清理孤儿图片：仅删「其他文章不再引用」的，避免误删共享图
+  //    扫描失败则保守跳过（宁可留孤儿图，不可误删在用的图）
+  if (targetImages.length > 0) {
+    try {
+      const stillReferenced = await collectReferencedImages(slug)
+      for (const url of targetImages) {
+        if (!stillReferenced.has(url)) {
+          await deleteUploadImage(url)
+        }
+      }
+    } catch {
+      // 扫描失败，保守不清理
+    }
+  }
 }

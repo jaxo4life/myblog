@@ -1,0 +1,9 @@
+# Cloudflare Pages 缓存规则（Next 导出时复制到 out/_headers）
+
+# 带 hash 的静态资源（JS/CSS/字体）：一年长缓存 immutable
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# 其余（HTML 页面等）：每次回源验证，文章删除/更新立即生效，杜绝 CDN stale
+/*
+  Cache-Control: public, max-age=0, must-revalidate
