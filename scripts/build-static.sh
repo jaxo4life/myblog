@@ -33,6 +33,12 @@ if [ -d "$API_DIR" ]; then
   mv "$API_DIR" "$API_BACKUP"
 fi
 
+# 清掉编辑器图片暂存目录（gitignore 的临时文件，不应进静态产物）
+if [ -d "public/cache" ]; then
+  echo "  → Removing image staging cache..."
+  rm -rf public/cache
+fi
+
 # 运行构建（设置环境变量启用静态导出）
 echo "🏗️  Building..."
 STATIC_BUILD=true npm run build

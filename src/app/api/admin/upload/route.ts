@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { uploadImage } from '@/lib/admin/image'
+import { uploadImage, cleanStagingCache } from '@/lib/admin/image'
 import { verifyAuth, unauthorized } from '@/lib/admin/auth'
 
 export const runtime = 'nodejs'
@@ -7,7 +7,7 @@ export const runtime = 'nodejs'
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 const MAX_SIZE = 10 * 1024 * 1024 // 10MB
 
-// 上传图片
+// 上传图片（进暂存目录 public/cache/uploads，保存文章时才结算进 public/uploads）
 export async function POST(request: Request) {
   if (!verifyAuth(request)) return unauthorized()
 
@@ -52,6 +52,24 @@ export async function POST(request: Request) {
       {
         success: false,
         error: error instanceof Error ? error.message : '上传失败',
+      },
+      { status: 500 }
+    )
+  }
+}
+
+// 清空暂存目录（编辑页进入时 / 保存成功后调用）
+export async function DELETE(request: Request) {
+  if (!verifyAuth(request)) return unauthorized()
+
+  try {
+    await cleanStagingCache()
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : '清理暂存图片失败',
       },
       { status: 500 }
     )

@@ -253,7 +253,7 @@ export default function AdminPage() {
                 <tbody className="divide-y divide-border">
                   {posts.map((post) => (
                     <tr key={post.slug} className="hover:bg-muted/50">
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
                           <FileText className="h-4 w-4 text-muted-foreground" />
                           <span className="font-medium">{post.title}</span>

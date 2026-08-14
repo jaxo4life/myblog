@@ -35,6 +35,9 @@ next-env.d.ts
 
 # content-collections
 .content-collections
+
+# 编辑器图片暂存（保存文章时才结算进 public/uploads）
+/public/cache/
 scripts/fix-broken-image-urls.js
 scripts/fix-double-timestamp.js
 scripts/fix-ipfs-images.js

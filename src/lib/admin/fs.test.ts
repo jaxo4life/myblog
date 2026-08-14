@@ -1,6 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { resolvePostFile, extractImageUrls } from './fs'
+import path from 'node:path'
+import { resolvePostFile, extractImageUrls, uploadUrlToPath } from './fs'
 
 test('合法 slug 通过', () => {
   assert.ok(resolvePostFile('2026/my-post'))
@@ -43,4 +44,20 @@ test('extractImageUrls 只保留 /uploads/ 本地图，忽略外链与其它路�
 test('extractImageUrls cover 为空或非 uploads 时忽略', () => {
   assert.deepEqual(extractImageUrls('text', undefined), [])
   assert.deepEqual(extractImageUrls('text', 'https://ext.com/c.jpg'), [])
+})
+
+test('uploadUrlToPath 解析到项目内 uploads 目录（Windows 前导斜杠坑）', () => {
+  const cwd = path.resolve('E:/fake-proj')
+  const p = uploadUrlToPath('/uploads/2026/08/a.jpg', cwd)
+  assert.ok(p, '应成功解析')
+  const base = path.resolve(cwd, 'public', 'uploads')
+  assert.ok(p.startsWith(base + path.sep), `必须在 ${base} 内，实际 ${p}`)
+  assert.ok(p.includes(path.join('2026', '08', 'a.jpg')))
+})
+
+test('uploadUrlToPath 非法输入返回 null', () => {
+  assert.equal(uploadUrlToPath('https://ext.com/a.jpg'), null)
+  assert.equal(uploadUrlToPath('/images/a.jpg'), null)
+  assert.equal(uploadUrlToPath('/uploads/'), null)
+  assert.equal(uploadUrlToPath('/uploads/../secret.txt'), null)
 })

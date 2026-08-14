@@ -228,6 +228,15 @@
     @apply p-6;
   }
 
+  /* 隐藏滚动条但保留滚动能力（admin 编辑器/侧栏用） */
+  .no-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* 旧 Edge */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
   /* 打字机光标动画 */
   @keyframes blink-cursor {
     0%, 50% { opacity: 1; }

@@ -3,6 +3,7 @@ import path from 'path'
 import matter from 'gray-matter'
 import readingTime from 'reading-time'
 import { PostData, PostMetadata, PostListItem } from '@/types/admin'
+import { settleImages } from './image'
 
 const CONTENT_DIR = path.join(process.cwd(), 'content/posts')
 
@@ -117,34 +118,71 @@ export async function getPost(slug: string): Promise<PostData | null> {
   }
 }
 
-// 创建新文章
+// 创建新文章（保存前结算暂存图片：cache → uploads 并改写引用）
 export async function createPost(post: PostData): Promise<void> {
-  const filePath = resolvePostFile(post.slug)
+  const settled = await settleImages(post)
+
+  const filePath = resolvePostFile(settled.slug)
   const dir = path.dirname(filePath)
   await mkdir(dir, { recursive: true })
 
   const frontmatter: PostMetadata = {
-    title: post.title,
-    date: post.date,
-    summary: post.summary,
-    tags: post.tags,
-    draft: post.draft,
-    cover: post.cover,
-    featured: post.featured,
+    title: settled.title,
+    date: settled.date,
+    summary: settled.summary,
+    tags: settled.tags,
+    draft: settled.draft,
+    cover: settled.cover,
+    featured: settled.featured,
   }
 
-  const content = matter.stringify(post.content, frontmatter)
+  const content = matter.stringify(settled.content, frontmatter)
   await writeFile(filePath, content, 'utf-8')
 }
 
 // 更新文章
 export async function updatePost(slug: string, post: PostData): Promise<void> {
-  // 如果 slug 变了，删除旧文件
-  if (slug !== post.slug) {
-    await deletePost(slug)
+  // 1. 读取旧文章引用的图片（不存在则跳过——新建场景由 createPost 处理）
+  let oldUrls: string[] = []
+  try {
+    const raw = await readFile(resolvePostFile(slug), 'utf-8')
+    const { data, content: body } = matter(raw)
+    oldUrls = extractImageUrls(body, data.cover as string | undefined)
+  } catch {
+    // 旧文件读不到（如 slug 已被手动改动），按无历史引用处理
   }
 
-  await createPost(post)
+  // 2. slug 变了：只删旧 .mdx 文件（不走 deletePost——它会清孤儿图，
+  //    而改 slug 后引用不变，误删会让新文件引用悬空）。
+  //    容错：连续改名时旧文件可能已被上一次改名删掉
+  if (slug !== post.slug) {
+    try {
+      await unlink(resolvePostFile(slug))
+    } catch {
+      // 旧文件不存在（如自动保存下的连续改名），跳过
+    }
+  }
+
+  // 3. 结算暂存图片并写入新内容（createPost 内的 settle 幂等，此处已无 cache 引用）
+  const settled = await settleImages(post)
+  await createPost(settled)
+
+  // 4. 结算被移除的图片：旧引用中不再被新文章引用、且无其他文章使用的 → 删文件。
+  //    覆盖「删除封面/换图后保存」的场景；扫描失败保守不删（防误删共享图）
+  const newUrls = new Set(extractImageUrls(settled.content, settled.cover))
+  const dropped = oldUrls.filter((u) => !newUrls.has(u))
+  if (dropped.length > 0) {
+    try {
+      const stillReferenced = await collectReferencedImages(post.slug)
+      for (const url of dropped) {
+        if (!stillReferenced.has(url)) {
+          await deleteUploadImage(url)
+        }
+      }
+    } catch {
+      // 扫描失败，保守不清理
+    }
+  }
 }
 
 // 提取一篇文章引用的本地上传图片 URL（cover + markdown 图片），用于孤儿图片清理
@@ -157,12 +195,27 @@ export function extractImageUrls(content: string, cover?: string): string[] {
   return Array.from(urls)
 }
 
+/**
+ * 上传图片 URL → 项目内绝对路径（纯函数，供测试）。
+ * 注意：不能直接 `resolve(cwd, 'public', url)`——Windows 下 '/uploads/..' 前导斜杠
+ * 会被当成盘符根绝对路径，解析出项目外路径导致删除被静默跳过。
+ * 先剥掉 URL 前缀得到相对路径再拼接。返回 null 表示非法（非 uploads / 越界）。
+ */
+export function uploadUrlToPath(url: string, cwd: string = process.cwd()): string | null {
+  const PREFIX = '/uploads/'
+  if (!url.startsWith(PREFIX)) return null
+  const rel = url.slice(PREFIX.length)
+  if (!rel || rel.includes('..')) return null
+  const base = path.resolve(cwd, 'public', 'uploads')
+  const resolved = path.resolve(base, rel)
+  if (!resolved.startsWith(base + path.sep)) return null
+  return resolved
+}
+
 // 安全删除一张上传图片（仅限 public/uploads 内，防路径穿越）
 async function deleteUploadImage(url: string): Promise<void> {
-  if (!url.startsWith('/uploads/')) return
-  const resolved = path.resolve(process.cwd(), 'public', url)
-  const base = path.resolve(process.cwd(), 'public/uploads')
-  if (!resolved.startsWith(base + path.sep)) return
+  const resolved = uploadUrlToPath(url)
+  if (!resolved) return
   try {
     await unlink(resolved)
   } catch {
