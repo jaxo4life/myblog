@@ -1,15 +1,14 @@
 import { SiteHeader } from '@/components/layout/site-header'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { PostGrid } from '@/components/blog/post-grid'
-import { getPublishedPosts, getFeaturedPosts } from '@/lib/content'
-import { getAllTags } from '@/lib/content'
+import { getPublishedPosts, getFeaturedPosts, getAllTagsWithSlug } from '@/lib/content'
 import Link from 'next/link'
 import { ArrowRight, BookOpen, Calendar, Terminal, FolderOpen } from 'lucide-react'
 
 export default function HomePage() {
   const posts = getPublishedPosts()
   const featuredPosts = getFeaturedPosts()
-  const tags = getAllTags().slice(0, 8)
+  const tags = getAllTagsWithSlug().slice(0, 8)
 
   return (
     <>
@@ -204,12 +203,12 @@ export default function HomePage() {
               <div className="flex flex-wrap justify-center gap-3">
                 {tags.map((tag) => (
                   <Link
-                    key={tag}
-                    href={`/blog/tag/${tag.toLowerCase()}`}
+                    key={tag.slug}
+                    href={`/blog/tag/${tag.slug}`}
                     className="group"
                   >
                     <span className="tag-array hover:border-terminal-green/50 transition-colors">
-                      <span className="group-hover:text-terminal-green transition-colors">{tag}</span>
+                      <span className="group-hover:text-terminal-green transition-colors">{tag.name}</span>
                     </span>
                   </Link>
                 ))}

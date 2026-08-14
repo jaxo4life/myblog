@@ -1,9 +1,10 @@
 import { getPublishedPosts } from '@/lib/content'
+import { siteConfig } from '@/lib/site-config'
 
 export const dynamic = 'force-static'
 
 export async function GET() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
+  const siteUrl = siteConfig.url
 
   const robotsTxt = `# https://www.robotstxt.org/robotstxt.html
 User-agent: *

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { SiteHeader } from '@/components/layout/site-header'
 import { SiteFooter } from '@/components/layout/site-footer'
-import { getPostsByTag, getAllTags } from '@/lib/content'
+import { getPostsByTag, getAllTags, slugToTag, tagToSlug } from '@/lib/content'
 import { PostGrid } from '@/components/blog/post-grid'
 import { Terminal, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
@@ -10,26 +10,32 @@ interface TagPageProps {
   params: Promise<{ tag: string }>
 }
 
+// 生成拼音 slug 作为静态参数（URL 不再是百分号编码的中文）
 export function generateStaticParams() {
-  const tags = getAllTags()
-  return tags.map((tag) => ({
-    tag: tag.toLowerCase(), // 直接使用原始标签名，不编码
-  }))
+  return getAllTags().map((tag) => ({ tag: tagToSlug(tag) }))
 }
 
 export async function generateMetadata({ params }: TagPageProps) {
   const { tag } = await params
-  const decodedTag = decodeURIComponent(tag)
+  const tagName = slugToTag(tag)
+  if (!tagName) return {}
   return {
-    title: `标签: ${decodedTag}`,
-    description: `查看所有带有 ${decodedTag} 标签的文章`,
+    title: `标签: ${tagName}`,
+    description: `查看所有带有 ${tagName} 标签的文章`,
+    alternates: { canonical: `/blog/tag/${tag}` },
   }
 }
 
 export default async function TagPage({ params }: TagPageProps) {
   const { tag } = await params
-  const decodedTag = decodeURIComponent(tag)
-  const posts = getPostsByTag(decodedTag)
+  // URL slug 反查回中文标签名（用于显示和查询）
+  const tagName = slugToTag(tag)
+
+  if (!tagName) {
+    notFound()
+  }
+
+  const posts = getPostsByTag(tagName)
 
   if (posts.length === 0) {
     notFound()
@@ -59,17 +65,17 @@ export default async function TagPage({ params }: TagPageProps) {
                 tags
               </Link>
               <span className="text-terminal-green/50">/</span>
-              <span className="text-foreground">{decodedTag}</span>
+              <span className="text-foreground">{tagName}</span>
             </div>
 
             {/* 终端命令 */}
             <div className="flex items-center gap-2 mb-4 font-mono text-sm text-muted-foreground">
               <Terminal className="h-4 w-4 text-terminal-green" />
-              <span>$ grep -r &apos;{decodedTag}&apos; posts/</span>
+              <span>$ grep -r &apos;{tagName}&apos; posts/</span>
             </div>
 
             <h1 className="text-3xl font-bold text-foreground mb-2">
-              <span className="text-gradient">标签: {decodedTag}</span>
+              <span className="text-gradient">标签: {tagName}</span>
             </h1>
             <p className="mt-2 text-muted-foreground font-mono text-sm">
               <span className="text-terminal-green">found:</span> {posts.length} 篇文章

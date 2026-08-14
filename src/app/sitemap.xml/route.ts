@@ -1,9 +1,10 @@
-import { getPublishedPosts, getAllTags } from '@/lib/content'
+import { getPublishedPosts, getAllTags, tagToSlug } from '@/lib/content'
+import { siteConfig } from '@/lib/site-config'
 
 export const dynamic = 'force-static'
 
 export async function GET() {
-  const siteUrl = 'https://blog.jaxoo.xyz'
+  const siteUrl = siteConfig.url
   const posts = getPublishedPosts()
   const tags = getAllTags()
 
@@ -37,7 +38,7 @@ export async function GET() {
   ${tags
     .map(
       (tag) => `  <url>
-    <loc>${siteUrl}/blog/tag/${encodeURIComponent(tag.toLowerCase())}</loc>
+    <loc>${siteUrl}/blog/tag/${tagToSlug(tag)}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>`

@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server'
 import { getPostList, createPost } from '@/lib/admin/fs'
 import { PostData } from '@/types/admin'
+import { verifyAuth, unauthorized } from '@/lib/admin/auth'
 
 export const runtime = 'nodejs'
 
 // 获取文章列表
-export async function GET() {
+export async function GET(request: Request) {
+  if (!verifyAuth(request)) return unauthorized()
+
   try {
     const posts = await getPostList()
     return NextResponse.json({
@@ -27,6 +30,8 @@ export async function OPTIONS() {
 
 // 创建新文章
 export async function POST(request: Request) {
+  if (!verifyAuth(request)) return unauthorized()
+
   try {
     const body = await request.json()
     const { slug, title, date, summary, tags, draft, cover, featured, content } = body as PostData

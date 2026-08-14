@@ -15,7 +15,8 @@ interface TableOfContentsProps {
 
 export function TableOfContents({ headings }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('')
-  const h2Headings = headings.filter((h) => h.level === 2)
+  // 支持 h2（顶格）和 h3（缩进）两级，呈现真实文章结构
+  const tocItems = headings.filter((h) => h.level === 2 || h.level === 3)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -32,30 +33,29 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
       }
     )
 
-    h2Headings.forEach(({ id }) => {
+    tocItems.forEach(({ id }) => {
       const element = document.getElementById(id)
       if (element) observer.observe(element)
     })
 
     return () => observer.disconnect()
-  }, [h2Headings])
+  }, [tocItems])
 
-  if (h2Headings.length === 0) return null
+  if (tocItems.length === 0) return null
 
   return (
     <nav className="hidden lg:block" aria-label="目录">
       <div className="sticky top-20">
-        <h4 className="text-sm font-semibold text-foreground mb-4">
-          目录
-        </h4>
+        <h4 className="text-sm font-semibold text-foreground mb-4">目录</h4>
         <ul className="space-y-1 border-l border-border">
-          {h2Headings.map(({ id, text }) => (
+          {tocItems.map(({ id, text, level }) => (
             <li key={id}>
               <a
                 href={`#${id}`}
                 className={cn(
                   'toc-link',
-                  activeId === id && 'active'
+                  activeId === id && 'active',
+                  level === 3 && 'pl-7 text-xs'
                 )}
                 onClick={(e) => {
                   e.preventDefault()

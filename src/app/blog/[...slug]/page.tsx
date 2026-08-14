@@ -3,7 +3,8 @@ import { SiteHeader } from '@/components/layout/site-header'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { ReadingProgress } from '@/components/blog/reading-progress'
 import { TableOfContents } from '@/components/blog/table-of-contents'
-import { getPostBySlug, getPublishedPosts } from '@/lib/content'
+import { getPostBySlug, getPublishedPosts, tagToSlug } from '@/lib/content'
+import { siteConfig } from '@/lib/site-config'
 import { formatDate } from '@/lib/utils'
 import { Terminal, Calendar, Clock, ArrowLeft, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
@@ -31,12 +32,17 @@ export async function generateMetadata({ params }: PostPageProps) {
   return {
     title: post.title,
     description: post.summary,
+    alternates: {
+      canonical: `/blog/${post.slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.summary,
       type: 'article',
+      url: `/blog/${post.slug}`,
       publishedTime: post.date.toISOString(),
       tags: post.tags,
+      images: post.cover ? [{ url: post.cover }] : [{ url: siteConfig.ogImage }],
     },
   }
 }
@@ -125,7 +131,7 @@ export default async function PostPage({ params }: PostPageProps) {
                   {post.tags.map((tag: string) => (
                     <Link
                       key={tag}
-                      href={`/blog/tag/${tag.toLowerCase()}`}
+                      href={`/blog/tag/${tagToSlug(tag)}`}
                       className="tag-array text-xs"
                     >
                       <span className="group-hover:text-terminal-green transition-colors">{tag}</span>

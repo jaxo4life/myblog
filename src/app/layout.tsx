@@ -1,10 +1,13 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import '../styles/globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { BackToTop } from '@/components/layout/back-to-top'
+import { siteConfig } from '@/lib/site-config'
 
-const inter = Inter({ subsets: ['latin'], display: 'swap' })
+// 终端美学：西文用 JetBrains Mono（等宽，代码/标签/命令），正文 Inter；中文均 fallback 到系统字体（零下载）
+const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', variable: '--font-mono-jb' })
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -14,11 +17,12 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
   title: {
-    default: "jaxo's view",
-    template: "%s | jaxo's view",
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
   },
-  description: '分享技术、思考和生活的个人博客',
+  description: siteConfig.description,
   keywords: ['博客', '技术', '编程', '思考'],
   authors: [{ name: 'jaxo' }],
   creator: 'jaxo',
@@ -28,20 +32,24 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'zh_CN',
-    url: '/',
-    siteName: "jaxo's view",
-    title: "jaxo's view",
-    description: '分享技术、思考和生活的个人博客',
+    locale: siteConfig.locale,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [{ url: siteConfig.ogImage }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "jaxo's view",
-    description: '分享技术、思考和生活的个人博客',
+    title: siteConfig.name,
+    description: siteConfig.description,
   },
   robots: {
     index: true,
     follow: true,
+  },
+  alternates: {
+    canonical: '/',
   },
 }
 
@@ -51,8 +59,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-CN" suppressHydrationWarning>
-      <body className={inter.className}>
+    <html lang="zh-CN" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <body>
         <ThemeProvider
           attribute="data-theme"
           defaultTheme="system"

@@ -20,7 +20,7 @@
 ## 功能特性
 
 ### 内容管理
-- 📝 **在线编辑** - 内置管理后台，支持 WYSIWYG 编辑
+- 📝 **在线编辑** - Markdown 编辑器，支持实时预览（编辑 / 分屏 / 预览）
 - 🚀 **一键发布** - 保存后自动 git commit & push
 - 🏷️ **标签系统** - 文章分类和筛选
 - 📄 **草稿功能** - 支持草稿保存，随时继续编辑
@@ -49,7 +49,7 @@
 | Content Collections | 0.13+ | 内容管理 |
 | MDX | - | Markdown + JSX |
 | Shiki | 1.24+ | 代码高亮 |
-| TipTap | 2.27+ | 富文本编辑器 |
+| react-markdown | 9+ | Markdown 编辑预览 |
 
 ## 快速开始
 
@@ -251,7 +251,7 @@ export function MyComponent() {
 - Content Collections 0.13+ (内容管理)
 - MDX (Markdown + JSX)
 - Shiki 1.24+ (代码高亮，使用 @shikijs/rehype)
-- TipTap/Novel (富文本编辑器)
+- react-markdown (Markdown 编辑 + 实时预览)
 
 ## 内容结构
 文章使用 MDX 格式，frontmatter 包含：
@@ -277,7 +277,7 @@ export function MyComponent() {
 - 文章详情 /blog/[...slug]：MDX 渲染，目录导航，阅读进度条
 - 标签页 /blog/tag/[tag] 和标签列表 /tags
 - 管理后台 /admin：文章列表（表格/卡片），新建/编辑/删除功能
-- 编辑器 /admin/edit/[...slug]：使用 TipTap/Novel 的 WYSIWYG 编辑器
+- 编辑器 /admin/edit/[...slug]：Markdown 编辑器（编辑 / 分屏 / 预览）
 - 关于页面 /about
 
 ## API 路由
@@ -306,6 +306,14 @@ export function MyComponent() {
 ---
 
 ## 更新日志
+
+### v0.3.0 (2025-08)
+- 🔒 安全加固：admin API 鉴权（localhost 边界 + 可选 ADMIN_TOKEN）、修复发布命令注入与文件路径穿越
+- 🗑️ 清理死代码 / 死依赖（Tiptap / Novel / marked 等），编辑器改为 Markdown + 实时预览（react-markdown）
+- 📖 修复中文阅读时长严重失真（reading-time 库 CJK 计数）
+- 🖼️ 修复发布遗漏 `public/uploads/`（线上缺图）
+- 🔍 SEO：统一站点 URL、tag 拼音化、补全 OG image 与 canonical
+- 🔤 统一等宽字体、TOC 支持 h2/h3 层级
 
 ### v0.2.0 (2025-02)
 - ✨ 添加管理后台，支持在线编辑文章

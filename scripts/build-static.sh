@@ -1,15 +1,28 @@
 #!/bin/bash
 
 # 静态构建脚本 - 临时移除 admin 和 api 路由
+# （output:'export' 不允许动态 API routes，故构建前物理移走、构建后恢复）
 
 ADMIN_DIR="src/app/(admin)"
 API_DIR="src/app/api"
 ADMIN_BACKUP=".admin-backup"
 API_BACKUP=".api-backup"
 
+# 恢复被移走的目录（幂等：仅在 backup 存在时执行）
+restore() {
+  if [ -d "$ADMIN_BACKUP" ]; then
+    mv "$ADMIN_BACKUP" "$ADMIN_DIR" && echo "  → admin 文件夹已恢复"
+  fi
+  if [ -d "$API_BACKUP" ]; then
+    mv "$API_BACKUP" "$API_DIR" && echo "  → api 文件夹已恢复"
+  fi
+}
+
+# 关键：任何退出情况（成功 / 失败 / Ctrl+C 中断）都触发恢复，杜绝目录丢失
+trap restore EXIT
+
 echo "🔧 Preparing for static build..."
 
-# 备份并移除 admin 和 api 文件夹
 if [ -d "$ADMIN_DIR" ]; then
   echo "  → Temporarily moving admin folder..."
   mv "$ADMIN_DIR" "$ADMIN_BACKUP"
@@ -25,18 +38,7 @@ echo "🏗️  Building..."
 STATIC_BUILD=true npm run build
 BUILD_STATUS=$?
 
-# 恢复文件夹
-echo "🔧 Restoring folders..."
-if [ -d "$ADMIN_BACKUP" ]; then
-  echo "  → Restoring admin folder..."
-  mv "$ADMIN_BACKUP" "$ADMIN_DIR"
-fi
-
-if [ -d "$API_BACKUP" ]; then
-  echo "  → Restoring api folder..."
-  mv "$API_BACKUP" "$API_DIR"
-fi
-
+# trap EXIT 会自动 restore，这里只报结果
 if [ $BUILD_STATUS -eq 0 ]; then
   echo "✅ Build completed successfully!"
 else

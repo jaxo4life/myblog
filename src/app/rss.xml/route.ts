@@ -1,13 +1,12 @@
 import { getPublishedPosts } from '@/lib/content'
+import { siteConfig } from '@/lib/site-config'
 
 export const dynamic = 'force-static'
 
 export async function GET() {
   const posts = getPublishedPosts().slice(0, 20)
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
-  const siteName = '我的博客'
-  const siteDescription = '分享技术、思考和生活的个人博客'
+  const { url: siteUrl, name: siteName, description: siteDescription } = siteConfig
 
   const rssItems = posts
     .map((post) => {

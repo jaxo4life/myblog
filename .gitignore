@@ -47,6 +47,5 @@ nul
 
 # claude
 .claude
-.claude.md
+CLAUDE.md
 启动开发服务器.cmd
-package-lock.json

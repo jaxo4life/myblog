@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPost, updatePost, deletePost } from '@/lib/admin/fs'
 import { PostData } from '@/types/admin'
+import { verifyAuth, unauthorized } from '@/lib/admin/auth'
 
 export const runtime = 'nodejs'
 
@@ -9,6 +10,8 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ slug: string[] }> }
 ) {
+  if (!verifyAuth(request)) return unauthorized()
+
   try {
     const { slug } = await params
     // slug 是数组，去掉可能存在的空字符串（来自尾随斜杠）
@@ -40,6 +43,8 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ slug: string[] }> }
 ) {
+  if (!verifyAuth(request)) return unauthorized()
+
   try {
     const { slug } = await params
     const slugParts = Array.isArray(slug) ? slug.filter(s => s) : [slug]
@@ -78,6 +83,8 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ slug: string[] }> }
 ) {
+  if (!verifyAuth(request)) return unauthorized()
+
   try {
     const { slug } = await params
     const slugParts = Array.isArray(slug) ? slug.filter(s => s) : [slug]

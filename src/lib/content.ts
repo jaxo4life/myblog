@@ -5,6 +5,7 @@
 
 import type { Post } from '~content'
 import { allPosts } from '~content'
+import { tagToSlug } from './slug'
 
 // 为了解决 webpack 别名问题，这里定义类型
 export type { Post }
@@ -65,4 +66,26 @@ export function getPaginatedPosts(page: number = 1, perPage: number = 9) {
       hasPrevPage: currentPage > 1,
     },
   }
+}
+
+// tagToSlug 定义在 ./slug（纯拼音逻辑，便于测试），此处 re-export 保持公开 API
+export { tagToSlug }
+
+/** URL slug → tag 中文名（反查所有标签） */
+export function slugToTag(slug: string): string | undefined {
+  return getAllTags().find((t) => tagToSlug(t) === slug)
+}
+
+/** 获取所有标签及其 slug 与文章数（按文章数降序） */
+export function getAllTagsWithSlug(): Array<{ name: string; slug: string; count: number }> {
+  const posts = getPublishedPosts()
+  const map = new Map<string, number>()
+  posts.forEach((post) => {
+    post.tags.forEach((tag) => {
+      map.set(tag, (map.get(tag) || 0) + 1)
+    })
+  })
+  return Array.from(map.entries())
+    .map(([name, count]) => ({ name, slug: tagToSlug(name), count }))
+    .sort((a, b) => b.count - a.count)
 }

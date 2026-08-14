@@ -32,17 +32,6 @@ export function formatDate(
 }
 
 /**
- * 计算阅读时间
- * @param content - 文章内容
- * @returns 阅读时间（分钟）
- */
-export function calculateReadingTime(content: string): number {
-  const wordsPerMinute = 200
-  const words = content.split(/\s+/).length
-  return Math.ceil(words / wordsPerMinute)
-}
-
-/**
  * 截断文本
  * @param text - 原始文本
  * @param maxLength - 最大长度
@@ -53,17 +42,3 @@ export function truncate(text: string, maxLength: number = 160): string {
   return text.slice(0, maxLength).trim() + '...'
 }
 
-/**
- * 生成 URL 友好的 slug
- * @param text - 原始文本
- * @returns slug 字符串
- */
-export function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-')
-    .replace(/^-+/, '')
-    .replace(/-+$/, '')
-}

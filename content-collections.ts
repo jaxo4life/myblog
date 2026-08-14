@@ -6,6 +6,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import remarkGfm from 'remark-gfm'
 import rehypeSlugPinyin from './src/lib/rehype-slug-pinyin'
 import { Slugger } from './src/lib/slug'
+import calcReadingTime from 'reading-time'
 
 const posts = defineCollection({
   name: 'Post',
@@ -75,9 +76,8 @@ const posts = defineCollection({
       headings.push({ id, text, level })
     }
 
-    const wordsPerMinute = 200
-    const words = document.content.split(/\s+/).length
-    const readingTime = Math.ceil(words / wordsPerMinute)
+    // 中文阅读时长：reading-time 库按 CJK 字符计数，wordsPerMinute 按中文阅读速度调校
+    const readingTime = Math.max(1, Math.ceil(calcReadingTime(document.content, { wordsPerMinute: 350 }).minutes))
 
     return {
       ...document,

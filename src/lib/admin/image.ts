@@ -83,15 +83,3 @@ export async function uploadImage(
   }
 }
 
-// 删除图片
-export async function deleteImage(url: string): Promise<void> {
-  const filePath = path.join(process.cwd(), 'public', url)
-  const sharp = require('sharp')
-  // 这里简化处理，实际应该检查文件是否存在
-  const fs = require('fs/promises')
-  try {
-    await fs.unlink(filePath)
-  } catch {
-    // 文件不存在或已删除
-  }
-}

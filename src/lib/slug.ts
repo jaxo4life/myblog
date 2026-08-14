@@ -64,3 +64,22 @@ export class Slugger {
     return slug
   }
 }
+
+/**
+ * tag 中文名 → URL slug（拼音）。
+ * 中文逐字转拼音，英文/数字保留，空格转连字符。
+ * 让标签 URL 从百分号编码的中文（%E9%A1%B9...）变为可读拼音。
+ */
+export function tagToSlug(tag: string): string {
+  let result = ''
+  for (const char of tag) {
+    if (/[一-龥]/.test(char)) {
+      result += pinyin(char, { toneType: 'none' })
+    } else if (/[a-zA-Z0-9]/.test(char)) {
+      result += char.toLowerCase()
+    } else if (/\s/.test(char)) {
+      if (result && !result.endsWith('-')) result += '-'
+    }
+  }
+  return result.replace(/-+/g, '-').replace(/^-+|-+$/g, '')
+}
